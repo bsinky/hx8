@@ -1,5 +1,6 @@
 package;
 
+import emu.CPU;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -12,11 +13,18 @@ import flixel.util.FlxMath;
  */
 class PlayState extends FlxState
 {
+	private var myChip8:CPU;
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
+		//setupGraphics();
+		//setupInput();
+		
+		myChip8 = new CPU();
+		//myChip8.load("pong");
+		
 		super.create();
 	}
 	
@@ -34,6 +42,15 @@ class PlayState extends FlxState
 	 */
 	override public function update():Void
 	{
+		myChip8.cycle();
+		
+		if (myChip8.drawFlag)
+		{
+			//drawGraphics();
+		}
+		
+		myChip8.setKeys();
+		
 		super.update();
 	}	
 }
