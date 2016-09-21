@@ -6,28 +6,34 @@ package emu;
  */
 class CPU
 {
+
 	public var drawFlag:Bool;		// Whether to draw to screen this cycle
-	
+
 	private var opcode:Int;			// Current opcode to execute
 	private var memory:Array<Int>;	// Chip 8 total memory
 	private var V:Array<Int>;		// CPU registers
 	private var I:Int;				// Index register
 	private var pc:Int;				// Program counter
 	private var gfx:Array<Bool>;	// Screen
+	private var screen:Display;
 	private var delay_timer:Int;	// Delay timer register
 	private var sound_timer:Int;	// Sound timer register
 	private var stack:Array<Int>;	// Stack for pc before subroutine calls
 	private var sp:Int;				// Stack pointer
 	private var key:Array<Int>;		// HEX based keypad for input
+	private var isRunning:Bool;	    // Whether the CPU is running
 	
 	static inline public var WORD:Int = 2;		// Word size
 	static inline public var REG_MAX:Int 255;	// Max value a register can hold
+	static inline public var MEMORY_SIZE = 0x1000; // 4096 or 0x1000 memory size
 	
 	public function new() 
 	{
 		memory = new Array<Int>();
+		clearMemory();
 		V = new Array<Int>();
-		gfx = new Array<Bool>();
+		clearRegisters();
+		screen = new Display();
 		key = new Array<Int>();
 	}
 	
@@ -39,9 +45,13 @@ class CPU
 		sp = 0;						// Reset stack pointer
 		
 		// Clear Display
+		screen.clear();
 		// Clear Stack
+		stack = new Array<Int>();
 		// Clear Registers V0-VF
+		clearRegisters();
 		// Clear memory
+		clearMemory();
 		
 		// TODO: create chip8_fontset
 		// Load fontset
@@ -53,23 +63,54 @@ class CPU
 		*/
 		
 		// Reset timers
+		sound_timer = 0;
+		delay_timer = 0;
 	}
 	
-	public function loadGame(Game:Dynamic):Void 
+	// TODO: Array of bool is naiive, won't perform well
+	public function loadGame(game:Array<bool>):Void 
 	{
-		// TODO: fetch the game to open somehow
-		
 		// Load program into memory
-		/*
-		 * for( i in 0...bufferSize)
-		 * {
-		 * 		memory[i + 512] = buffer[i];
-		 * }
-		 */
+		for(i in 0...game.length)
+		{	
+			memory[i + 0x200] = game[i];
+		}
+	}
+
+	private function clearRegisters():Void
+	{
+		for (i in 0...0xf)
+		{
+			V[i] = 0;
+		}
+	}
+
+	private function clearMemory():Void
+	{
+		for (i in 0...MEMORY_SIZE)
+		{
+			memory[i] = 0;
+		}
+	}
+
+	public function start():Void
+	{
+		isRunning = true;
+	}
+
+	public function stop():Void
+	{
+		isRunning = false;
 	}
 	
 	public function cycle():Void 
 	{
+		// TODO: might need to handle timers even when not running
+		if (!isRunning)
+		{
+			return;
+		}
+
 		// Fetch opcode
 		opcode = memory[pc] << 8 | memory[pc + 1];
 		
@@ -81,10 +122,11 @@ class CPU
 				switch(opcode & 0x000F)
 				{
 					case 0x0000: // 00E0: Clears the screen
-						// TODO: clear Screen
+						screen.clear();
 						
 					case 0x000E: // 00EE: Returns from subroutine
-					
+						pc = stack[sp];
+						sp--;
 					default:
 						trace("Unknown opcode: " + StringTools.hex(opcode));
 				}
@@ -121,7 +163,7 @@ class CPU
 				V[register] += opcode & 0x00FF;
 				// Constrain the value to 8 bits in length (no carry)
 				if (V[register] > REG_MAX)
-					V[register] = REG_MAX;
+					V[register] -= REG_MAX + 1; // +1 for off-by-one
 				pc += 2;
 				
 			case 0x8000:
@@ -219,6 +261,30 @@ class CPU
 				
 			case 0xD000: // DXYN: draw to screen
 				// TODO: draw sprite to screen
+				V[0xF] = 0;
+				var x = (opcode & 0x0F00) >> 8;
+				var y = (opcode & 0x00F0) >> 4;
+
+                var height = opcode & 0x000F;
+                var registerX = V[x];
+            	var registerY = V[y];
+				var spr = 0;
+
+				for (screenY in 0...screen.HEIGHT)
+				{
+					spr = memory[I + screenY];
+					for (x in 0...8) {
+						if ((spr & 0x80) > 0)
+						{
+							if (screen.setPixel(registerX + x, registerY + y))
+							{
+								V[0xF] = 1;
+							}
+						}
+						spr <<= 1;
+					}
+					drawFlag = true;
+				}
 				
 			case 0xE000:
 				switch(opcode & 0x00F0)
@@ -251,6 +317,7 @@ class CPU
 								
 							case 0x000A: // FX0A
 								// TODO: await a key press, then store in VX
+								stop();
 						}
 					case 0x0010:
 						switch(opcode & 0x000F)
@@ -267,16 +334,29 @@ class CPU
 							case 0x000E: // FX1E
 								var x = (opcode & 0x0F00) >> 8;
 								I += V[x];
-								if (I > REG_MAX)
-									I = REG_MAX;
+								// Don't care about overflow?
+								// if (I > REG_MAX)
+								// 	I = REG_MAX;
 								pc += 2;
 						}
 						
 					case 0x0020: // FX29
-						// TODO: implement confusing font opcode
+						// TODO: this might not be right?
+						var x = (opcode & 0x0F00) >> 8;
+						I += V[x] * 5;
 						
 					case 0x0030: // FX33
-						// TODO: implement complex floating point opcode
+						// TODO: Not sure if this works/is correct?
+						var x = (opcode & 0x0F00) >> 8;
+						var number = V[x];
+						var i = 3;
+						while (i > 0)
+						{
+							memory[i + i - 1] = number % 10;
+							number /= 10;
+
+							i--;
+						}
 						
 					case 0x0050: // FX55
 						var x = (opcode & 0x0F00) >> 8;

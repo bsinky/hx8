@@ -14,6 +14,7 @@ import flixel.util.FlxMath;
 class PlayState extends FlxState
 {
 	private var myChip8:CPU;
+	// TODO: sprite/bitmap for display!
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -34,6 +35,7 @@ class PlayState extends FlxState
 	 */
 	override public function destroy():Void
 	{
+		myChip8 = null;
 		super.destroy();
 	}
 
@@ -46,7 +48,7 @@ class PlayState extends FlxState
 		
 		if (myChip8.drawFlag)
 		{
-			//drawGraphics();
+			drawGraphics();
 		}
 		
 		myChip8.setKeys();
