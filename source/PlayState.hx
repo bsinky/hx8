@@ -1,12 +1,13 @@
 package;
 
 import emu.CPU;
+import emu.Display;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
+import flixel.util.FlxColor;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -14,7 +15,8 @@ import flixel.util.FlxMath;
 class PlayState extends FlxState
 {
 	private var myChip8:CPU;
-	// TODO: sprite/bitmap for display!
+	private var graphics:FlxSprite;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -26,6 +28,11 @@ class PlayState extends FlxState
 		myChip8 = new CPU();
 		//myChip8.load("pong");
 		
+		graphics = new FlxSprite(0, 0);
+		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, FlxColor.BLACK, true);
+		
+		add(graphics);
+		
 		super.create();
 	}
 	
@@ -36,23 +43,24 @@ class PlayState extends FlxState
 	override public function destroy():Void
 	{
 		myChip8 = null;
+		graphics = null;
 		super.destroy();
 	}
 
 	/**
 	 * Function that is called once every frame.
 	 */
-	override public function update():Void
+	override public function update(elapsed:Float):Void
 	{
 		myChip8.cycle();
 		
 		if (myChip8.drawFlag)
 		{
-			drawGraphics();
+			myChip8.drawScreen(graphics.pixels);
 		}
 		
 		myChip8.setKeys();
 		
-		super.update();
-	}	
+		super.update(elapsed);
+	}
 }

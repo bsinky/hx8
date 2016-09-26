@@ -1,9 +1,12 @@
 package emu;
+import flash.display.BitmapData;
 
 class Display
 {
     public static inline var WIDTH:Int = 64;
     public static inline var HEIGHT:Int = 32;
+	public static inline var OFF_COLOR:UInt = 0xff000000;
+	public static inline var ON_COLOR:UInt = 0xffffffff;
 
     private var screen:Array<Bool>;
 
@@ -19,7 +22,7 @@ class Display
     {
         for (x in 0...WIDTH)
         {
-            for y in 0...HEIGHT)
+            for( y in 0...HEIGHT)
             {
                 screen[x + (y * HEIGHT)] = false;
             }
@@ -28,8 +31,8 @@ class Display
 
     private function wrapXAndY(x:Int, y:Int):Point
     {
-        var xToSet;
-        var yToSet;
+        var xToSet = 0;
+        var yToSet = 0;
 
         if (x > WIDTH)
         {
@@ -49,11 +52,11 @@ class Display
             yToSet = y += HEIGHT;
         }
 
-        return { X = xToSet, Y = yToSet };
+        return { X: xToSet, Y: yToSet };
     }
 
     // Returns true if the pixel toggled from set to unset
-    private function setPixel(x:Int, y:Int):Bool
+    public function setPixel(x:Int, y:Int):Bool
     {
         var location = wrapXAndY(x, y);
         var previousPixelValue = screen[location.X + (location.Y * WIDTH)];
@@ -68,6 +71,22 @@ class Display
         var location = wrapXAndY(x, y);
         return screen[location.X + (location.Y * WIDTH)];
     }
-
-    typedef Point = { X:Int, Y:Int }
+	
+	public function draw(pixels:BitmapData): Void
+	{
+		pixels.lock();
+		
+		// do drawing
+		for (x in 0...WIDTH)
+        {
+            for( y in 0...HEIGHT)
+            {
+                pixels.setPixel32(x, y, screen[x + (y * WIDTH)] ? ON_COLOR : OFF_COLOR);
+            }
+        }
+		
+		pixels.unlock();
+	}
 }
+
+typedef Point = { X:Int, Y:Int }

@@ -1,4 +1,5 @@
 package emu;
+import flash.display.BitmapData;
 
 /**
  * ...
@@ -20,11 +21,11 @@ class CPU
 	private var sound_timer:Int;	// Sound timer register
 	private var stack:Array<Int>;	// Stack for pc before subroutine calls
 	private var sp:Int;				// Stack pointer
-	private var key:Array<Int>;		// HEX based keypad for input
+	private var key:Array<Bool>;	// HEX based keypad for input
 	private var isRunning:Bool;	    // Whether the CPU is running
 	
 	static inline public var WORD:Int = 2;		// Word size
-	static inline public var REG_MAX:Int 255;	// Max value a register can hold
+	static inline public var REG_MAX:Int = 255;	// Max value a register can hold
 	static inline public var MEMORY_SIZE = 0x1000; // 4096 or 0x1000 memory size
 	
 	public function new() 
@@ -34,7 +35,7 @@ class CPU
 		V = new Array<Int>();
 		clearRegisters();
 		screen = new Display();
-		key = new Array<Int>();
+		key = new Array<Bool>();
 	}
 	
 	public function initialize():Void 
@@ -66,9 +67,8 @@ class CPU
 		sound_timer = 0;
 		delay_timer = 0;
 	}
-	
-	// TODO: Array of bool is naiive, won't perform well
-	public function loadGame(game:Array<bool>):Void 
+
+	public function loadGame(game:Array<Int>):Void 
 	{
 		// Load program into memory
 		for(i in 0...game.length)
@@ -101,6 +101,11 @@ class CPU
 	public function stop():Void
 	{
 		isRunning = false;
+	}
+	
+	public function drawScreen(pixels:BitmapData): Void
+	{
+		screen.draw(pixels);
 	}
 	
 	public function cycle():Void 
@@ -270,7 +275,7 @@ class CPU
             	var registerY = V[y];
 				var spr = 0;
 
-				for (screenY in 0...screen.HEIGHT)
+				for (screenY in 0...Display.HEIGHT)
 				{
 					spr = memory[I + screenY];
 					for (x in 0...8) {
@@ -299,7 +304,7 @@ class CPU
 					case 0x00a0: // EXA1: skip if key noted by code in VX is NOT pressed
 						var x = (opcode & 0x0F00) >> 8;
 						// TODO: key number??
-						if (!key[V[k]])
+						if (!key[V[x]])
 							pc += 2;
 						pc += 2;
 				}
@@ -348,11 +353,11 @@ class CPU
 					case 0x0030: // FX33
 						// TODO: Not sure if this works/is correct?
 						var x = (opcode & 0x0F00) >> 8;
-						var number = V[x];
+						var number:Float = V[x];
 						var i = 3;
 						while (i > 0)
 						{
-							memory[i + i - 1] = number % 10;
+							memory[i + i - 1] = cast(number % 10, Int);
 							number /= 10;
 
 							i--;
