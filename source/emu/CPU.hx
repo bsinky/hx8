@@ -1,4 +1,6 @@
 package emu;
+
+import haxe.io.Bytes;
 import flash.display.BitmapData;
 
 /**
@@ -68,12 +70,12 @@ class CPU
 		delay_timer = 0;
 	}
 
-	public function loadGame(game:Array<Int>):Void 
+	public function loadGame(game:Bytes):Void
 	{
-		// Load program into memory
+		// Load program into memory a byte at a time
 		for(i in 0...game.length)
 		{	
-			memory[i + 0x200] = game[i];
+			memory[i + 0x200] = game.get(i);
 		}
 	}
 

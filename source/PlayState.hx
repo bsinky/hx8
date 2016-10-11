@@ -1,5 +1,6 @@
 package;
 
+import sys.io;
 import emu.CPU;
 import emu.Display;
 import flixel.FlxG;
@@ -22,11 +23,12 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
-		//setupGraphics();
-		//setupInput();
-		
 		myChip8 = new CPU();
-		//myChip8.load("pong");
+		
+		// TODO: allow user to select file
+		var fileInput = File.read("pong", true);
+
+		myChip8.loadGame(fileInput.realAll());
 		
 		graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, FlxColor.BLACK, true);
