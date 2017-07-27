@@ -1,13 +1,10 @@
 package;
 
-import sys.io;
+import sys.io.File;
 import emu.CPU;
 import emu.Display;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 
 /**
@@ -26,9 +23,8 @@ class PlayState extends FlxState
 		myChip8 = new CPU();
 		
 		// TODO: allow user to select file
-		var fileInput = File.read("pong", true);
-
-		myChip8.loadGame(fileInput.realAll());
+		var filePath = "pong";
+		myChip8.loadGame(File.getBytes(filePath));
 		
 		graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, FlxColor.BLACK, true);

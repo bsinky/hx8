@@ -223,7 +223,7 @@ class CPU
 					case 0x0006: // 8X06: shift VX right, bit 0 goes to VF
 						var x = (opcode & 0x0F00) >> 8;
 						V[0xF] = V[x] & 0x1;
-						V[x] == V[x] >> 1;
+						V[x] = V[x] >> 1;
 						pc += 2;
 					
 					// TODO: double-check borrow logic
