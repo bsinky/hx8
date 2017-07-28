@@ -3,6 +3,7 @@ package;
 import sys.io.File;
 import emu.CPU;
 import emu.Display;
+import emu.Util;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxColor;
@@ -23,13 +24,15 @@ class PlayState extends FlxState
 		myChip8 = new CPU();
 		
 		// TODO: allow user to select file
-		var filePath = "pong";
+		var filePath = "/home/bens/roms/chip8/PONG";
 		myChip8.loadGame(File.getBytes(filePath));
 		
 		graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, FlxColor.BLACK, true);
 		
 		add(graphics);
+
+		myChip8.start();
 		
 		super.create();
 	}
@@ -50,10 +53,12 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
+		Util.log("cycle...");
 		myChip8.cycle();
 		
 		if (myChip8.drawFlag)
 		{
+			Util.log("drawScreen");
 			myChip8.drawScreen(graphics.pixels);
 		}
 		
