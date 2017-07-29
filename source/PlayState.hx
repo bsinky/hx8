@@ -51,7 +51,7 @@ class PlayState extends FlxState
 		myChip8.loadGame(File.getBytes(filePath));
 		
 		graphics = new FlxSprite(0, 0);
-		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, FlxColor.BLACK, true);
+		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Display.OFF_COLOR, true);
 		
 		add(graphics);
 
