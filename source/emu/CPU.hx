@@ -38,6 +38,7 @@ class CPU
 		clearRegisters();
 		screen = new Display();
 		key = new Array<Bool>();
+		initialize();
 	}
 	
 	public function initialize():Void 
