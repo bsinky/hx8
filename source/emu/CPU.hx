@@ -171,8 +171,8 @@ class CPU
 						
 					case 0x000E:
 						trace("00EE: Returns from subroutine");
-						pc = stack[sp];
 						sp--;
+						pc = stack[sp];
 					default:
 						trace("Unknown opcode: " + StringTools.hex(opcode));
 				}
@@ -377,13 +377,12 @@ class CPU
 						I += V[x] * 5;
 						
 					case 0x0030:
-						trace("FX33");
-						// TODO: Not sure if this works/is correct?
+						trace("FX33: Store BCD representation of Vx in memory location starting at location I");
 						var number:Float = V[x];
 						var i = 3;
 						while (i > 0)
 						{
-							memory[i + i - 1] = cast(number % 10, Int);
+							memory[i + i - 1] = Std.int(number % 10);
 							number /= 10;
 
 							i--;
@@ -407,7 +406,10 @@ class CPU
 			default:
 				trace("Unkown opcode: " + StringTools.hex(opcode));
 		}
-		
+	}
+
+	public function handleTimers(): Void
+	{
 		// Update timers
 		if (delay_timer > 0)
 			delay_timer--;

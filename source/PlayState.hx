@@ -19,6 +19,7 @@ class PlayState extends FlxState
 {
 	private var myChip8:CPU;
 	private var graphics:FlxSprite;
+	private var step:Int;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -76,12 +77,14 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		trace("cycle...");
+
 		myChip8.cycle();
-		
+
 		if (myChip8.drawFlag)
 		{
 			trace("drawScreen");
 			myChip8.drawScreen(graphics.pixels);
+			myChip8.drawFlag = false;
 		}
 		
 		if (myChip8.isWaitingForKey && FlxG.keys.anyJustPressed(chip8Keys))
@@ -89,6 +92,11 @@ class PlayState extends FlxState
 			var keyCode = chip8KeyMap.get(FlxG.keys.firstJustPressed());
 			myChip8.setKey(keyCode);
 			myChip8.start();
+		}
+
+		if (step++ % 2 == 0)
+		{
+			myChip8.handleTimers();
 		}
 		
 		super.update(elapsed);
