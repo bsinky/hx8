@@ -11,6 +11,7 @@ class CPU
 {
 
 	public var drawFlag:Bool;		// Whether to draw to screen this cycle
+	public var isWaitingForKey:Bool;
 
 	private var opcode:Int;			// Current opcode to execute
 	private var memory:Array<Int>;	// Chip 8 total memory
@@ -25,6 +26,27 @@ class CPU
 	private var sp:Int;				// Stack pointer
 	private var key:Array<Bool>;	// HEX based keypad for input
 	private var isRunning:Bool;	    // Whether the CPU is running
+	private var nextKeyRegister:Int; // Register to store next key press in while waiting for a key
+
+	private var chip8_fontset =
+	[
+		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+		0x20, 0x60, 0x20, 0x20, 0x70, // 1
+		0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+		0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+		0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+		0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+		0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+		0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+		0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+		0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+		0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+		0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+		0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+		0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+		0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+		0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+	];
 	
 	static inline public var WORD:Int = 2;		// Word size
 	static inline public var REG_MAX:Int = 255;	// Max value a register can hold
@@ -57,14 +79,11 @@ class CPU
 		// Clear memory
 		clearMemory();
 		
-		// TODO: create chip8_fontset
 		// Load fontset
-		/*
 		for(i in 0...80)
 		{
 			memory[i] = chip8_fontset[i];
 		}
-		*/
 		
 		// Reset timers
 		sound_timer = 0;
@@ -109,6 +128,18 @@ class CPU
 	public function drawScreen(pixels:BitmapData): Void
 	{
 		screen.draw(pixels);
+	}
+
+	public function waitForKey(): Void
+	{
+		stop();
+		isWaitingForKey = true;
+	}
+
+	public function setKey(key:Int): Void
+	{
+		isWaitingForKey = false;
+		V[nextKeyRegister] = key;
 	}
 	
 	public function cycle():Void 
@@ -318,7 +349,8 @@ class CPU
 							case 0x000A:
 								Util.log("FX0A");
 								// TODO: await a key press, then store in VX
-								stop();
+								nextKeyRegister = x;
+								waitForKey();
 						}
 					case 0x0010:
 						switch(opcode & 0x000F)
@@ -386,10 +418,5 @@ class CPU
 				trace("BEEP!");
 			sound_timer--;
 		}
-	}
-	
-	public function setKeys():Void 
-	{
-		
 	}
 }

@@ -1,9 +1,14 @@
 package;
 
 import sys.io.File;
+import Sys;
 import emu.CPU;
 import emu.Display;
 import emu.Util;
+import arguable.ArgParser;
+import flixel.input.keyboard.FlxKeyList;
+import flixel.input.keyboard.FlxKey;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxColor;
@@ -21,10 +26,28 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
+		var results = ArgParser.parse(Sys.args());
+
+		if (!results.has("rom"))
+		{
+			Sys.println("Please supply a \"--rom /path/to/rom/\" argument");
+			Sys.exit(-1);
+		}
+
+		var filePath = results.get("rom").value;
+		
+		chip8KeyMap = new Map<FlxKey, Int>();
+
+		// Initialize key map
+		for (i in 0...chip8Keys.length)
+		{
+			chip8KeyMap.set(chip8Keys[i], i);
+		}
+
 		myChip8 = new CPU();
 		
-		// TODO: allow user to select file
-		var filePath = "/home/bens/roms/chip8/PONG";
+		Util.log('Loading ${filePath}');
+
 		myChip8.loadGame(File.getBytes(filePath));
 		
 		graphics = new FlxSprite(0, 0);
@@ -62,8 +85,22 @@ class PlayState extends FlxState
 			myChip8.drawScreen(graphics.pixels);
 		}
 		
-		myChip8.setKeys();
+		if (myChip8.isWaitingForKey && FlxG.keys.anyJustPressed(chip8Keys))
+		{
+			var keyCode = chip8KeyMap.get(FlxG.keys.firstJustPressed());
+			myChip8.setKey(keyCode);
+			myChip8.start();
+		}
 		
 		super.update(elapsed);
 	}
+
+	private var chip8Keys = [
+		FlxKey.A,
+		FlxKey.S,
+		FlxKey.Z,
+		FlxKey.X
+	];
+
+	private var chip8KeyMap:Map<FlxKey, Int>;
 }

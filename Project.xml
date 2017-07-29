@@ -33,6 +33,7 @@
 	
 	<!--------------------------------LIBRARIES------------------------------------->
 
+	<haxelib name="arguable"/>
 	<haxelib name="flixel"/>
 	
 	<!--In case you want to use the addons package-->
