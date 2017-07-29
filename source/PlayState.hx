@@ -4,7 +4,6 @@ import sys.io.File;
 import Sys;
 import emu.CPU;
 import emu.Display;
-import emu.Util;
 import arguable.ArgParser;
 import flixel.input.keyboard.FlxKeyList;
 import flixel.input.keyboard.FlxKey;
@@ -46,7 +45,7 @@ class PlayState extends FlxState
 
 		myChip8 = new CPU();
 		
-		Util.log('Loading ${filePath}');
+		trace('Loading ${filePath}');
 
 		myChip8.loadGame(File.getBytes(filePath));
 		
@@ -76,12 +75,12 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
-		Util.log("cycle...");
+		trace("cycle...");
 		myChip8.cycle();
 		
 		if (myChip8.drawFlag)
 		{
-			Util.log("drawScreen");
+			trace("drawScreen");
 			myChip8.drawScreen(graphics.pixels);
 		}
 		

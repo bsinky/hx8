@@ -1,4 +1,9 @@
 {
     "haxe.displayConfigurations": [],
-    "lime.projectFile": "Project.xml"
+    "lime.projectFile": "Project.xml",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/export": true
+    }
 }
