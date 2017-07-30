@@ -18,7 +18,6 @@ class CPU
 	private var V:Array<Int>;		// CPU registers
 	private var I:Int;				// Index register
 	private var pc:Int;				// Program counter
-	private var gfx:Array<Bool>;	// Screen
 	private var screen:Display;
 	private var delay_timer:Int;	// Delay timer register
 	private var sound_timer:Int;	// Sound timer register
