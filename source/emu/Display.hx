@@ -86,7 +86,25 @@ class Display
         }
 		
 		pixels.unlock();
+
+        Util.displayLog(this);
 	}
+
+    public function toString(): String
+    {
+        var screenString = "";
+
+        for (y in 0...HEIGHT)
+        {
+            for (x in 0...WIDTH)
+            {
+                screenString += getPixel(x, y) ? "1" : "0";
+            }
+            screenString += "\n";
+        }
+
+        return screenString;
+    }
 }
 
 typedef Point = { X:Int, Y:Int }

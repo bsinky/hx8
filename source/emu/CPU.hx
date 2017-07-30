@@ -136,6 +136,16 @@ class CPU
 		isWaitingForKey = true;
 	}
 
+	public function setKeys(keyStates:Map<Int, Bool>): Void
+	{
+		for (keyCode in keyStates.keys())
+		{
+			key[keyCode] = keyStates[keyCode];
+		}
+
+		Util.keysLog(keyStates);
+	}
+
 	public function setKey(key:Int): Void
 	{
 		isWaitingForKey = false;
@@ -144,7 +154,6 @@ class CPU
 	
 	public function cycle():Void 
 	{
-		// TODO: might need to handle timers even when not running
 		if (!isRunning)
 		{
 			return;
@@ -166,48 +175,48 @@ class CPU
 				switch(opcode & 0x000F)
 				{
 					case 0x0000:
-						trace("00E0: Clear screen");
+						Util.cpuLog("00E0: Clear screen");
 						screen.clear();
 						
 					case 0x000E:
-						trace("00EE: Returns from subroutine");
+						Util.cpuLog("00EE: Returns from subroutine");
 						sp--;
 						pc = stack[sp];
 					default:
-						trace("Unknown opcode: " + StringTools.hex(opcode));
+						Util.cpuLog("Unknown opcode: " + StringTools.hex(opcode));
 				}
 				
 			case 0x1000:
-				trace("1NNN: Jump to address NNN");
+				Util.cpuLog("1NNN: Jump to address NNN");
 				pc = opcode & 0x0FFF;
 				
 			case 0x2000:
-				trace("2NNN: Calls subroutine at NNN");
+				Util.cpuLog("2NNN: Calls subroutine at NNN");
 				stack[sp] = pc;
 				sp++;
 				pc = opcode & 0x0FFF;
 				
 			case 0x3000:
-				trace("3XNN: Skip if VX equals constant NN");
+				Util.cpuLog("3XNN: Skip if VX equals constant NN");
 				if (V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
 			case 0x4000:
-				trace("4XNN: Skip if VX does not equal NN");
+				Util.cpuLog("4XNN: Skip if VX does not equal NN");
 				if (V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
 			case 0x5000:
-				trace("5XY0: Skip if VX equals VY");
+				Util.cpuLog("5XY0: Skip if VX equals VY");
 				if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
 					pc += 2;	// Skip next opcode
 				
 			case 0x6000:
-				trace("6XNN: Store NN in register VX");
+				Util.cpuLog("6XNN: Store NN in register VX");
 				V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
 				
 			case 0x7000:
-				trace("7XNN: Add NN to VX.  No carry.");
+				Util.cpuLog("7XNN: Add NN to VX.  No carry.");
 				var register = (opcode & 0x0F00) >> 8;
 				V[register] += opcode & 0x00FF;
 				// Constrain the value to 8 bits in length (no carry)
@@ -218,23 +227,23 @@ class CPU
 				switch (opcode & 0x000F) 
 				{
 					case 0x0000:
-						trace("8XY0: Move VY into VX");
+						Util.cpuLog("8XY0: Move VY into VX");
 						V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
 						
 					case 0x0001:
-						trace("8XY1: bitwise OR of VY and VX, store in VX");
+						Util.cpuLog("8XY1: bitwise OR of VY and VX, store in VX");
 						V[x] = V[x] | V[y];
 						
 					case 0x0002:
-						trace("8XY2: bitwise AND of VY and VX, store in VX");
+						Util.cpuLog("8XY2: bitwise AND of VY and VX, store in VX");
 						V[x] = V[x] & V[y];
 						
 					case 0x0003:
-						trace("8XY3: bitwise XOR of VY and VX, store in VX");
+						Util.cpuLog("8XY3: bitwise XOR of VY and VX, store in VX");
 						V[x] = V[x] ^ V[y];
 						
 					case 0x0004:
-						trace("8XY4: Add value of VY to VX");
+						Util.cpuLog("8XY4: Add value of VY to VX");
 						if (V[(opcode & 0x00F0) >> 4] > (0xFF - V[(opcode & 0x0F00) >> 8]))
 							V[0xF] = 1; // carry flag
 						else
@@ -243,33 +252,41 @@ class CPU
 						// VX - 0X00				 VY - 00Y0
 						V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
 					
-					// TODO: double-check borrow logic
 					case 0x0005:
-						trace("8XY5: subtract VY from VX, borrow flag in VF");
+						Util.cpuLog("8XY5: subtract VY from VX, borrow flag in VF");
 						if (V[x] < V[y])
 							V[0xF] = 0; // borrow flag
 						else
 							V[0xF] = 1; // no borrow flag
-							
 						V[x] -= V[y];
+
+						if (V[x] < 0)
+						{
+							V[x] += 256;
+						}
+							
 						
 					case 0x0006:
-						trace("8X06: shift VX right, bit 0 goes to VF");
+						Util.cpuLog("8X06: shift VX right, bit 0 goes to VF");
 						V[0xF] = V[x] & 0x1;
 						V[x] = V[x] >> 1;
 					
-					// TODO: double-check borrow logic
 					case 0x0007:
-						trace("8XY7: subtract VX from VY, store in VX.  1 in VF if borrows.");
+						Util.cpuLog("8XY7: subtract VX from VY, store in VX.  1 in VF if borrows.");
 						if (V[y] < V[x])
 							V[0xF] = 0;		// borrow flag
 						else
 							V[0x0F] = 1;	// no borrow flag
 						
 						V[x] = V[y] - V[x];
+
+						if (V[x] < 0)
+						{
+							V[x] += 256;
+						}
 						
 					case 0x000E:
-						trace("8X0E: shift VX left 1 bit, 7th bit goes in VF");
+						Util.cpuLog("8X0E: shift VX left 1 bit, 7th bit goes in VF");
 						// AND with 0x80 to get leftmost bit of VX
 						V[0xF] = V[x] & 0x80;
 						// Left shift and AND to get rid of any bits outside of the 8 bits the register is supposed to be
@@ -277,24 +294,24 @@ class CPU
 				}
 				
 			case 0x9000:
-				trace("9XY0: skip if VX != VY");
+				Util.cpuLog("9XY0: skip if VX != VY");
 				if (V[x] != V[y])
 					pc += 2;
 				
 			case 0xA000:
-				trace("ANNN: Sets I to address NNN");
+				Util.cpuLog("ANNN: Sets I to address NNN");
 				I = opcode & 0x0FFF;
 				
 			case 0xB000:
-				trace("BNNN: Jump to address NNN + V0");
+				Util.cpuLog("BNNN: Jump to address NNN + V0");
 				pc = opcode & (0x0FFF + V[0x0]);
 				
 			case 0xC000:
-				trace("CXNN: Set VX to a random number less than or equal to NN");
+				Util.cpuLog("CXNN: Set VX to a random number less than or equal to NN");
 				V[x] = Math.round(Math.random() * (opcode & 0x00FF));
 				
 			case 0xD000:
-				trace("DXYN: draw to screen");
+				Util.cpuLog("DXYN: draw to screen");
 				// TODO: draw sprite to screen
 				V[0xF] = 0;
 
@@ -322,15 +339,14 @@ class CPU
 			case 0xE000:
 				switch(opcode & 0x00F0)
 				{
-					
 					case 0x0090:
-						trace("EX9E: skip if key noted by code in VX is pressed");
+						Util.cpuLog("EX9E: skip if key noted by code in VX is pressed");
 						// TODO: key number???
 						if (key[V[x]])
 							pc += 2;
 						
 					case 0x00a0:
-						trace("EXA1: skip if key noted by code in VX is NOT pressed");
+						Util.cpuLog("EXA1: skip if key noted by code in VX is NOT pressed");
 						// TODO: key number??
 						if (!key[V[x]])
 							pc += 2;
@@ -343,11 +359,11 @@ class CPU
 						switch(opcode & 0x000F)
 						{
 							case 0x0007:
-								trace("FX07");
+								Util.cpuLog("FX07");
 								V[x] = delay_timer;
 								
 							case 0x000A:
-								trace("FX0A");
+								Util.cpuLog("FX0A");
 								// TODO: await a key press, then store in VX
 								nextKeyRegister = x;
 								waitForKey();
@@ -356,15 +372,15 @@ class CPU
 						switch(opcode & 0x000F)
 						{
 							case 0x0005:
-								trace("FX15");
+								Util.cpuLog("FX15");
 								delay_timer = V[x];
 								
 							case 0x0008:
-								trace("FX18");
+								Util.cpuLog("FX18");
 								sound_timer = V[x];
 								
 							case 0x000E:
-								trace("FX1E");
+								Util.cpuLog("FX1E");
 								I += V[x];
 								// Don't care about overflow?
 								// if (I > REG_MAX)
@@ -372,12 +388,12 @@ class CPU
 						}
 						
 					case 0x0020:
-						trace("FX29");
+						Util.cpuLog("FX29");
 						// TODO: this might not be right?
 						I += V[x] * 5;
 						
 					case 0x0030:
-						trace("FX33: Store BCD representation of Vx in memory location starting at location I");
+						Util.cpuLog("FX33: Store BCD representation of Vx in memory location starting at location I");
 						var number:Float = V[x];
 						var i = 3;
 						while (i > 0)
@@ -389,14 +405,14 @@ class CPU
 						}
 						
 					case 0x0050:
-						trace("FX55: Store V0 to VX, inclusive, in memory starting at I");
+						Util.cpuLog("FX55: Store V0 to VX, inclusive, in memory starting at I");
 						for (r in 0...(x+1))
 						{
 							memory[I + r] = V[r];
 						}
 						
 					case 0x0060:
-						trace("FX65: Fill V0 to VX, inclusive, from memory starting at I");
+						Util.cpuLog("FX65: Fill V0 to VX, inclusive, from memory starting at I");
 						for (r in 0...(x + 1))
 						{
 							V[r] = memory[I + r];
@@ -404,7 +420,7 @@ class CPU
 				}
 			
 			default:
-				trace("Unkown opcode: " + StringTools.hex(opcode));
+				Util.cpuLog("Unkown opcode: " + StringTools.hex(opcode));
 		}
 	}
 
@@ -417,7 +433,7 @@ class CPU
 		if (sound_timer > 0)
 		{
 			if (sound_timer == 1)
-				trace("BEEP!");
+				Util.cpuLog("BEEP!");
 			sound_timer--;
 		}
 	}

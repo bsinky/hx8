@@ -4,9 +4,11 @@ import sys.io.File;
 import Sys;
 import emu.CPU;
 import emu.Display;
+import emu.Util;
 import arguable.ArgParser;
 import flixel.input.keyboard.FlxKeyList;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.FlxInput;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -76,16 +78,24 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
-		trace("cycle...");
+		Util.cpuLog("cycle...");
 
 		myChip8.cycle();
 
 		if (myChip8.drawFlag)
 		{
-			trace("drawScreen");
 			myChip8.drawScreen(graphics.pixels);
 			myChip8.drawFlag = false;
 		}
+
+		var keyStates = [
+			for (i in 0...chip8Keys.length)
+			{
+				i => FlxG.keys.checkStatus(chip8Keys[i], FlxInputState.PRESSED);
+			}
+		];
+
+		myChip8.setKeys(keyStates);
 		
 		if (myChip8.isWaitingForKey && FlxG.keys.anyJustPressed(chip8Keys))
 		{
@@ -105,8 +115,10 @@ class PlayState extends FlxState
 	private var chip8Keys = [
 		FlxKey.A,
 		FlxKey.S,
+		FlxKey.D,
 		FlxKey.Z,
-		FlxKey.X
+		FlxKey.X,
+		FlxKey.C
 	];
 
 	private var chip8KeyMap:Map<FlxKey, Int>;
