@@ -14,7 +14,7 @@
 	<!--------------------------------WINDOW SETTINGS------------------------------->
 	
 	<!--These window settings apply to all targets-->
-	<window width="640" height="480" fps="60" background="#000000" hardware="true" vsync="true" />
+	<window width="512" height="256" fps="60" background="#000000" hardware="true" vsync="true" />
 	
 	<!--Web-specific-->
 	<window if="web" orientation="portrait"  />
@@ -77,8 +77,8 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
-	<!-- <haxedef name="debugDisplay"/> -->
-	<haxedef name="debugKeys"/>
+	 <haxedef name="debugDisplay"/> 
+	<!-- <haxedef name="debugKeys"/> -->
 	
 	<!--------------------------------CUSTOM---------------------------------------->
 	

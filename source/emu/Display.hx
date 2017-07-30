@@ -24,7 +24,7 @@ class Display
         {
             for( y in 0...HEIGHT)
             {
-                screen[x + (y * HEIGHT)] = false;
+                screen[getScreenIndex(x, y)] = false;
             }
         }
     }
@@ -59,9 +59,10 @@ class Display
     public function setPixel(x:Int, y:Int):Bool
     {
         var location = wrapXAndY(x, y);
-        var previousPixelValue = screen[location.X + (location.Y * WIDTH)];
+        var screenIndex = getScreenIndex(location.X, location.Y);
+        var previousPixelValue = screen[screenIndex];
 
-        screen[location.X + (location.Y * WIDTH)] = !previousPixelValue;
+        screen[screenIndex] = !previousPixelValue;
 
         return previousPixelValue;
     }
@@ -69,7 +70,7 @@ class Display
     public function getPixel(x:Int, y:Int):Bool
     {
         var location = wrapXAndY(x, y);
-        return screen[location.X + (location.Y * WIDTH)];
+        return screen[getScreenIndex(location.X, location.Y)];
     }
 	
 	public function draw(pixels:BitmapData): Void
@@ -81,7 +82,7 @@ class Display
         {
             for( y in 0...HEIGHT)
             {
-                pixels.setPixel32(x, y, screen[x + (y * WIDTH)] ? ON_COLOR : OFF_COLOR);
+                pixels.setPixel32(x, y, getPixel(x, y) ? ON_COLOR : OFF_COLOR);
             }
         }
 		
@@ -92,7 +93,7 @@ class Display
 
     public function toString(): String
     {
-        var screenString = "";
+        var screenString = "\n";
 
         for (y in 0...HEIGHT)
         {
@@ -104,6 +105,11 @@ class Display
         }
 
         return screenString;
+    }
+
+    private function getScreenIndex(x:Int, y:Int):Int
+    {
+        return x + (y * WIDTH);
     }
 }
 

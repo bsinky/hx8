@@ -312,7 +312,6 @@ class CPU
 				
 			case 0xD000:
 				Util.cpuLog("DXYN: draw to screen");
-				// TODO: draw sprite to screen
 				V[0xF] = 0;
 
                 var height = opcode & 0x000F;
@@ -320,7 +319,7 @@ class CPU
             	var registerY = V[y];
 				var spr = 0;
 
-				for (screenY in 0...Display.HEIGHT)
+				for (screenY in 0...height)
 				{
 					spr = memory[I + screenY];
 					for (x in 0...8) {
@@ -333,21 +332,19 @@ class CPU
 						}
 						spr <<= 1;
 					}
-					drawFlag = true;
 				}
+				drawFlag = true;				
 				
 			case 0xE000:
 				switch(opcode & 0x00F0)
 				{
 					case 0x0090:
 						Util.cpuLog("EX9E: skip if key noted by code in VX is pressed");
-						// TODO: key number???
 						if (key[V[x]])
 							pc += 2;
 						
 					case 0x00a0:
 						Util.cpuLog("EXA1: skip if key noted by code in VX is NOT pressed");
-						// TODO: key number??
 						if (!key[V[x]])
 							pc += 2;
 				}
@@ -364,7 +361,6 @@ class CPU
 								
 							case 0x000A:
 								Util.cpuLog("FX0A");
-								// TODO: await a key press, then store in VX
 								nextKeyRegister = x;
 								waitForKey();
 						}
@@ -382,14 +378,11 @@ class CPU
 							case 0x000E:
 								Util.cpuLog("FX1E");
 								I += V[x];
-								// Don't care about overflow?
-								// if (I > REG_MAX)
-								// 	I = REG_MAX;
 						}
 						
 					case 0x0020:
-						Util.cpuLog("FX29");
-						// TODO: this might not be right?
+						Util.cpuLog("FX29: Set I equal to location of sprite for digit Vx.");
+						// Multiply by number of rows per character
 						I += V[x] * 5;
 						
 					case 0x0030:
@@ -420,7 +413,7 @@ class CPU
 				}
 			
 			default:
-				Util.cpuLog("Unkown opcode: " + StringTools.hex(opcode));
+				Util.cpuLog("Unknown opcode: " + StringTools.hex(opcode));
 		}
 	}
 
@@ -433,7 +426,10 @@ class CPU
 		if (sound_timer > 0)
 		{
 			if (sound_timer == 1)
+			{
+				// TODO: implement sound
 				Util.cpuLog("BEEP!");
+			}
 			sound_timer--;
 		}
 	}
