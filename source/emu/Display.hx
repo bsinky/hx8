@@ -31,8 +31,8 @@ class Display
 
     private function wrapXAndY(x:Int, y:Int):Point
     {
-        var xToSet = 0;
-        var yToSet = 0;
+        var xToSet = x;
+        var yToSet = y;
 
         if (x > WIDTH)
         {
