@@ -198,37 +198,36 @@ class CPU
 				
 			case 0x3000:
 				Util.cpuLog("3XNN: Skip if VX equals constant NN");
-				if (V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF))
+				if (V[x] == (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
 			case 0x4000:
 				Util.cpuLog("4XNN: Skip if VX does not equal NN");
-				if (V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF))
+				if (V[x] != (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
 			case 0x5000:
 				Util.cpuLog("5XY0: Skip if VX equals VY");
-				if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
+				if (V[x] == V[y])
 					pc += 2;	// Skip next opcode
 				
 			case 0x6000:
 				Util.cpuLog("6XNN: Store NN in register VX");
-				V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+				V[x] = opcode & 0x00FF;
 				
 			case 0x7000:
 				Util.cpuLog("7XNN: Add NN to VX.  No carry.");
-				var register = (opcode & 0x0F00) >> 8;
-				V[register] += opcode & 0x00FF;
+				V[x] += opcode & 0x00FF;
 				// Constrain the value to 8 bits in length (no carry)
-				if (V[register] > REG_MAX)
-					V[register] -= REG_MAX + 1; // +1 for off-by-one
+				if (V[x] > REG_MAX)
+					V[x] -= REG_MAX + 1; // +1 for off-by-one
 				
 			case 0x8000:
 				switch (opcode & 0x000F) 
 				{
 					case 0x0000:
 						Util.cpuLog("8XY0: Move VY into VX");
-						V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+						V[x] = V[y];
 						
 					case 0x0001:
 						Util.cpuLog("8XY1: bitwise OR of VY and VX, store in VX");
@@ -244,13 +243,12 @@ class CPU
 						
 					case 0x0004:
 						Util.cpuLog("8XY4: Add value of VY to VX");
-						if (V[(opcode & 0x00F0) >> 4] > (0xFF - V[(opcode & 0x0F00) >> 8]))
+						if (V[y] > (0xFF - V[x]))
 							V[0xF] = 1; // carry flag
 						else
 							V[0xF] = 0; // No carry
 						
-						// VX - 0X00				 VY - 00Y0
-						V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
+						V[x] += V[y];
 					
 					case 0x0005:
 						Util.cpuLog("8XY5: subtract VY from VX, borrow flag in VF");

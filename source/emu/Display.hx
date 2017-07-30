@@ -95,9 +95,9 @@ class Display
     {
         var screenString = "\n";
 
-        for (y in 0...HEIGHT)
+        for (x in 0...WIDTH)
         {
-            for (x in 0...WIDTH)
+            for (y in 0...HEIGHT)
             {
                 screenString += getPixel(x, y) ? "1" : "0";
             }
