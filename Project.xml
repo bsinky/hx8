@@ -78,7 +78,7 @@
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
 	<haxedef name="debugCPU"/>
-	<haxedef name="debugDisplay"/> 
+	<!-- <haxedef name="debugDisplay"/>  -->
 	<!-- <haxedef name="debugKeys"/> -->
 	
 	<!--------------------------------CUSTOM---------------------------------------->

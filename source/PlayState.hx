@@ -78,8 +78,6 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
-		Util.cpuLog("cycle...");
-
 		myChip8.cycle();
 
 		if (myChip8.drawFlag)

@@ -117,11 +117,13 @@ class CPU
 
 	public function start():Void
 	{
+		Util.cpuLog("CPU starting");
 		isRunning = true;
 	}
 
 	public function stop():Void
 	{
+		Util.cpuLog("CPU stopping");
 		isRunning = false;
 	}
 	
@@ -132,6 +134,7 @@ class CPU
 
 	public function waitForKey(): Void
 	{
+		Util.cpuLog("CPU waiting for key...");
 		stop();
 		isWaitingForKey = true;
 	}
@@ -158,6 +161,8 @@ class CPU
 		{
 			return;
 		}
+
+		Util.cpuLog("cycle start...");
 
 		// Fetch opcode
 		opcode = memory[pc] << 8 | memory[pc + 1];
