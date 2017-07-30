@@ -9,7 +9,6 @@ import flash.display.BitmapData;
  */
 class CPU
 {
-
 	public var drawFlag:Bool;		// Whether to draw to screen this cycle
 	public var isWaitingForKey:Bool;
 
@@ -224,7 +223,9 @@ class CPU
 				V[x] += opcode & 0x00FF;
 				// Constrain the value to 8 bits in length (no carry)
 				if (V[x] > REG_MAX)
+				{
 					V[x] -= REG_MAX + 1; // +1 for off-by-one
+				}
 				
 			case 0x8000:
 				switch (opcode & 0x000F) 
@@ -246,21 +247,26 @@ class CPU
 						V[x] = V[x] ^ V[y];
 						
 					case 0x0004:
-						Util.cpuLog("8XY4: Add value of VY to VX");
-						if (V[y] > (0xFF - V[x]))
-							V[0xF] = 1; // carry flag
-						else
-							V[0xF] = 0; // No carry
-						
+						Util.cpuLog("8XY4: Add value of VY to VX, set VF equal to carry");
+						var carryFlag = 0;
 						V[x] += V[y];
+
+						if (V[x] > 255)
+						{
+							V[x] -= 256;
+							carryFlag = 1;
+						}
+						V[0xF] = carryFlag;
 					
 					case 0x0005:
 						Util.cpuLog("8XY5: subtract VY from VX, borrow flag in VF");
-						if (V[x] < V[y])
-							V[0xF] = 0; // borrow flag
-						else
-							V[0xF] = 1; // no borrow flag
+						var borrowFlag = 0;
+						if (V[x] > V[y])
+						{
+							borrowFlag = 1;
+						}
 						V[x] -= V[y];
+						V[0xF] = borrowFlag;
 
 						if (V[x] < 0)
 						{
@@ -275,12 +281,14 @@ class CPU
 					
 					case 0x0007:
 						Util.cpuLog("8XY7: subtract VX from VY, store in VX.  1 in VF if borrows.");
-						if (V[y] < V[x])
-							V[0xF] = 0;		// borrow flag
-						else
-							V[0x0F] = 1;	// no borrow flag
-						
+						var borrowFlag = 0;
+						if (V[y] > V[x])
+						{
+							borrowFlag = 1;		// borrow flag
+						}
+
 						V[x] = V[y] - V[x];
+						V[0xF] = borrowFlag;
 
 						if (V[x] < 0)
 						{
@@ -310,7 +318,7 @@ class CPU
 				
 			case 0xC000:
 				Util.cpuLog("CXNN: Set VX to a random number less than or equal to NN");
-				V[x] = Math.round(Math.random() * (opcode & 0x00FF));
+				V[x] = Math.round(Math.random() * (opcode & 0x00FF)) & 0xFF;
 				
 			case 0xD000:
 				Util.cpuLog("DXYN: draw to screen");
