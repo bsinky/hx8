@@ -99,7 +99,7 @@ class CPU
 
 	private function clearRegisters():Void
 	{
-		for (i in 0...0xf)
+		for (i in 0...0xf + 1)
 		{
 			V[i] = 0;
 		}
@@ -161,12 +161,16 @@ class CPU
 		}
 
 		Util.cpuLog("cycle start...");
+		Util.cpuLog('program counter: ${pc} (0x${StringTools.hex(pc)})');
+		Util.cpuLog('stack pointer: ${sp}');
 
 		// Fetch opcode
 		opcode = memory[pc] << 8 | memory[pc + 1];
 
 		var x = (opcode & 0x0F00) >> 8;
 		var y = (opcode & 0x00F0) >> 4;
+
+		Util.cpuLog('X: ${x}, Y: ${y}');
 
 		pc += 2;
 		
@@ -190,22 +194,22 @@ class CPU
 				}
 				
 			case 0x1000:
-				Util.cpuLog("1NNN: Jump to address NNN");
+				Util.cpuLog('1NNN: Jump to address NNN (NNN: ${opcode & 0x0FFF})');
 				pc = opcode & 0x0FFF;
 				
 			case 0x2000:
-				Util.cpuLog("2NNN: Calls subroutine at NNN");
+				Util.cpuLog('2NNN: Calls subroutine at NNN (NNN: ${opcode & 0x0FFF})');
 				stack[sp] = pc;
 				sp++;
 				pc = opcode & 0x0FFF;
 				
 			case 0x3000:
-				Util.cpuLog("3XNN: Skip if VX equals constant NN");
+				Util.cpuLog('3XNN: Skip if VX equals constant NN (NN: ${opcode & 0x00FF})');
 				if (V[x] == (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
 			case 0x4000:
-				Util.cpuLog("4XNN: Skip if VX does not equal NN");
+				Util.cpuLog('4XNN: Skip if VX does not equal NN (NN: ${opcode & 0x00FF})');
 				if (V[x] != (opcode & 0x00FF))
 					pc += 2;	// Skip next opcode
 				
@@ -215,11 +219,11 @@ class CPU
 					pc += 2;	// Skip next opcode
 				
 			case 0x6000:
-				Util.cpuLog("6XNN: Store NN in register VX");
+				Util.cpuLog('6XNN: Store NN in register VX (NN: ${opcode & 0x00FF})');
 				V[x] = opcode & 0x00FF;
 				
 			case 0x7000:
-				Util.cpuLog("7XNN: Add NN to VX.  No carry.");
+				Util.cpuLog('7XNN: Add NN to VX.  No carry (NN: ${opcode & 0x00FF})');
 				V[x] += opcode & 0x00FF;
 				// Constrain the value to 8 bits in length (no carry)
 				if (V[x] > REG_MAX)
@@ -309,7 +313,7 @@ class CPU
 					pc += 2;
 				
 			case 0xA000:
-				Util.cpuLog("ANNN: Sets I to address NNN");
+				Util.cpuLog('ANNN: Sets I to address NNN (NNN: ${opcode & 0x0FFF})');
 				I = opcode & 0x0FFF;
 				
 			case 0xB000:
@@ -317,11 +321,11 @@ class CPU
 				pc = opcode & (0x0FFF + V[0x0]);
 				
 			case 0xC000:
-				Util.cpuLog("CXNN: Set VX to a random number less than or equal to NN");
+				Util.cpuLog('CXNN: Set VX to a random number less than or equal to NN (NN: ${opcode & 0x00FF})');
 				V[x] = Math.round(Math.random() * (opcode & 0x00FF)) & 0xFF;
 				
 			case 0xD000:
-				Util.cpuLog("DXYN: draw to screen");
+				Util.cpuLog('DXYN: draw to screen (N: ${opcode & 0x000F})');
 				V[0xF] = 0;
 
                 var height = opcode & 0x000F;
@@ -401,7 +405,7 @@ class CPU
 						var i = 3;
 						while (i > 0)
 						{
-							memory[i + i - 1] = Std.int(number % 10);
+							memory[I + i - 1] = Std.int(number % 10);
 							number /= 10;
 
 							i--;
@@ -425,6 +429,10 @@ class CPU
 			default:
 				Util.cpuLog("Unknown opcode: " + StringTools.hex(opcode));
 		}
+
+		Util.cpuLog("After opcode execute...");
+		Util.cpuLog(registerDump());
+		Util.cpuLog('I: ${I}');
 	}
 
 	public function handleTimers(): Void
@@ -442,5 +450,22 @@ class CPU
 			}
 			sound_timer--;
 		}
+	}
+
+	private function registerDump(): String
+	{
+		var dump = "\n";
+
+		for (x in 0...V.length)
+		{
+			dump += 'V[${StringTools.hex(x)}]: ${V[x]}';
+			if (x != V.length - 1)
+			{
+				dump += "\n";
+			}
+
+		}
+
+		return dump;
 	}
 }
