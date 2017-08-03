@@ -1,0 +1,6 @@
+-main DebuggerMain
+-cp ./
+-cpp bin/debugger
+-lib hxcpp
+-lib arguable
+-D debugCPU

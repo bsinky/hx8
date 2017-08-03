@@ -1,5 +1,4 @@
 package emu;
-import flash.display.BitmapData;
 
 class Display
 {
@@ -72,24 +71,6 @@ class Display
         var location = wrapXAndY(x, y);
         return screen[getScreenIndex(location.X, location.Y)];
     }
-	
-	public function draw(pixels:BitmapData): Void
-	{
-		pixels.lock();
-		
-		// do drawing
-		for (x in 0...WIDTH)
-        {
-            for( y in 0...HEIGHT)
-            {
-                pixels.setPixel32(x, y, getPixel(x, y) ? ON_COLOR : OFF_COLOR);
-            }
-        }
-		
-		pixels.unlock();
-
-        Util.displayLog(this);
-	}
 
     public function toString(): String
     {

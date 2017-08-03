@@ -1,18 +1,15 @@
 package;
 
-import sys.io.File;
 import Sys;
 import emu.CPU;
 import emu.Display;
-import emu.Util;
 import emu.Args;
-import flixel.input.keyboard.FlxKeyList;
+import emu.Renderer;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.FlxInput;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.util.FlxColor;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -20,7 +17,7 @@ import flixel.util.FlxColor;
 class PlayState extends FlxState
 {
 	private var myChip8:CPU;
-	private var graphics:FlxSprite;
+	private var renderer:Renderer;
 	private var step:Int;
 	
 	/**
@@ -48,10 +45,12 @@ class PlayState extends FlxState
 		
 		trace('Loading ${filePath}');
 
-		myChip8.loadGame(File.getBytes(filePath));
+		myChip8.loadGameFromPath(filePath);
 		
-		graphics = new FlxSprite(0, 0);
+		var graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Display.OFF_COLOR, true);
+
+		renderer = new Renderer(myChip8.screen, graphics.pixels);
 		
 		add(graphics);
 
@@ -67,7 +66,7 @@ class PlayState extends FlxState
 	override public function destroy():Void
 	{
 		myChip8 = null;
-		graphics = null;
+		renderer = null;
 		super.destroy();
 	}
 
@@ -80,7 +79,7 @@ class PlayState extends FlxState
 
 		if (myChip8.drawFlag)
 		{
-			myChip8.drawScreen(graphics.pixels);
+			renderer.draw();
 			myChip8.drawFlag = false;
 		}
 

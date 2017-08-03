@@ -1,2 +1,3 @@
-# Exclude the explort directory
+# Exclude the export directory
 export/
+source/bin/

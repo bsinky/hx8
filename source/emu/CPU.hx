@@ -1,7 +1,7 @@
 package emu;
 
+import sys.io.File;
 import haxe.io.Bytes;
-import flash.display.BitmapData;
 
 /**
  * ...
@@ -11,13 +11,13 @@ class CPU
 {
 	public var drawFlag:Bool;		// Whether to draw to screen this cycle
 	public var isWaitingForKey:Bool;
+	public var screen:Display;
 
 	private var opcode:Int;			// Current opcode to execute
 	private var memory:Array<Int>;	// Chip 8 total memory
 	private var V:Array<Int>;		// CPU registers
 	private var I:Int;				// Index register
 	private var pc:Int;				// Program counter
-	private var screen:Display;
 	private var delay_timer:Int;	// Delay timer register
 	private var sound_timer:Int;	// Sound timer register
 	private var stack:Array<Int>;	// Stack for pc before subroutine calls
@@ -88,6 +88,11 @@ class CPU
 		delay_timer = 0;
 	}
 
+	public function loadGameFromPath(gamePath:String):Void
+	{
+		loadGame(File.getBytes(gamePath));
+	}
+
 	public function loadGame(game:Bytes):Void
 	{
 		// Load program into memory a byte at a time
@@ -123,11 +128,6 @@ class CPU
 	{
 		Util.cpuLog("CPU stopping");
 		isRunning = false;
-	}
-	
-	public function drawScreen(pixels:BitmapData): Void
-	{
-		screen.draw(pixels);
 	}
 
 	public function waitForKey(): Void
@@ -170,7 +170,7 @@ class CPU
 		var x = (opcode & 0x0F00) >> 8;
 		var y = (opcode & 0x00F0) >> 4;
 
-		Util.cpuLog('X: ${x}, Y: ${y}');
+		Util.cpuLog('X: ${x} (0x${StringTools.hex(x)}), Y: ${y} (0x${StringTools.hex(y)})');
 
 		pc += 2;
 		
@@ -382,15 +382,15 @@ class CPU
 						switch(opcode & 0x000F)
 						{
 							case 0x0005:
-								Util.cpuLog("FX15");
+								Util.cpuLog("FX15: Set delay timer to VX");
 								delay_timer = V[x];
 								
 							case 0x0008:
-								Util.cpuLog("FX18");
+								Util.cpuLog("FX18: Set sound timer to VX");
 								sound_timer = V[x];
 								
 							case 0x000E:
-								Util.cpuLog("FX1E");
+								Util.cpuLog("FX1E: Set I equal to I + VX");
 								I += V[x];
 						}
 						
@@ -450,6 +450,32 @@ class CPU
 			}
 			sound_timer--;
 		}
+	}
+
+	public function memoryDump(?starting = 0, ?length:Int): String
+	{
+		length = length == null ? memory.length : length;
+		var dump = "\n";
+
+		for (x in 0...length)
+		{
+			if (x > memory.length)
+			{
+				break;
+			}
+
+			var memoryLocation = starting + x;
+			var memoryValue = memory[memoryLocation];
+
+			dump += '[${memoryLocation}]: ${memoryValue} (0x${StringTools.hex(memoryValue)})';
+
+			if (x % 5 == 0)
+			{
+				dump += "\n";
+			}
+		}
+
+		return dump;
 	}
 
 	private function registerDump(): String
