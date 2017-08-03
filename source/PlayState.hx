@@ -5,7 +5,7 @@ import Sys;
 import emu.CPU;
 import emu.Display;
 import emu.Util;
-import arguable.ArgParser;
+import emu.Args;
 import flixel.input.keyboard.FlxKeyList;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.FlxInput;
@@ -28,16 +28,14 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
-		var results = ArgParser.parse(Sys.args());
-
-		if (!results.has("rom"))
+		var filePath = Args.getROMArg();
+		
+		if (filePath == null)
 		{
 			Sys.println("Please supply a \"--rom /path/to/rom/\" argument");
 			Sys.exit(-1);
 		}
 
-		var filePath = results.get("rom").value;
-		
 		chip8KeyMap = new Map<FlxKey, Int>();
 
 		// Initialize key map
