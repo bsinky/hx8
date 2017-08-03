@@ -329,17 +329,15 @@ class CPU
 				V[0xF] = 0;
 
                 var height = opcode & 0x000F;
-                var registerX = V[x];
-            	var registerY = V[y];
 				var spr = 0;
 
 				for (screenY in 0...height)
 				{
 					spr = memory[I + screenY];
-					for (x in 0...8) {
+					for (screenX in 0...8) {
 						if ((spr & 0x80) > 0)
 						{
-							if (screen.setPixel(registerX + x, registerY + y))
+							if (screen.setPixel(V[x] + screenX, V[y] + screenY))
 							{
 								V[0xF] = 1;
 							}
