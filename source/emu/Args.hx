@@ -22,4 +22,9 @@ class Args
             ? _values.get("rom").value
             : null;
     }
+
+    public static function isFullscreen(): Bool
+    {
+        return _values.has("fullscreen");
+    }
 }
