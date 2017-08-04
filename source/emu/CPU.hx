@@ -1,6 +1,8 @@
 package emu;
 
+#if !js
 import sys.io.File;
+#end
 import haxe.io.Bytes;
 
 /**
@@ -90,7 +92,11 @@ class CPU
 
 	public function loadGameFromPath(gamePath:String):Void
 	{
+		#if js
+		// TODO
+		#else
 		loadGame(File.getBytes(gamePath));
+		#end
 	}
 
 	public function loadGame(game:Bytes):Void

@@ -1,7 +1,20 @@
 package emu;
 
+#if js
+import js.Browser;
+#end
+
 class Util
 {
+    public static function log(message:String): Void
+    {
+        #if js
+        Browser.window.console.log(message);
+        #else
+        Sys.println(message);
+        #end
+    }
+
     public static inline function cpuLog(message:String): Void
     {
         #if debugCPU

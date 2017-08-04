@@ -29,12 +29,15 @@
 	
 	<set name="BUILD_DIR" value="export" />
 	<classpath name="source" />
-	<assets path="assets" />
+	<assets path="assets" exclude="assets/data/public"/>
+	<assets path="assets/data/public" if="html5"/>
 	
 	<!--------------------------------LIBRARIES------------------------------------->
 
-	<haxelib name="arguable"/>
 	<haxelib name="flixel"/>
+
+	<haxelib name="arguable" unless="js"/>
+	<haxelib name="tink_url" if="js"/>
 	
 	<!--In case you want to use the addons package-->
 	<!--haxelib name="flixel-addons" /-->

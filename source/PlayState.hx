@@ -1,10 +1,10 @@
 package;
 
-import Sys;
 import emu.CPU;
 import emu.Display;
 import emu.Args;
 import emu.Renderer;
+import emu.Util;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.FlxInput;
 import flixel.FlxG;
@@ -29,8 +29,7 @@ class PlayState extends FlxState
 		
 		if (filePath == null)
 		{
-			Sys.println("Please supply a \"--rom /path/to/rom/\" argument");
-			Sys.exit(-1);
+			Util.log("Please supply a \"--rom /path/to/rom/\" argument");
 		}
 
 		chip8KeyMap = new Map<FlxKey, Int>();
@@ -43,7 +42,7 @@ class PlayState extends FlxState
 
 		myChip8 = new CPU();
 		
-		trace('Loading ${filePath}');
+		Util.log('Loading ${filePath}');
 
 		myChip8.loadGameFromPath(filePath);
 		
