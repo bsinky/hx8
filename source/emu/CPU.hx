@@ -55,9 +55,7 @@ class CPU
 	public function new() 
 	{
 		memory = new Array<Int>();
-		clearMemory();
 		V = new Array<Int>();
-		clearRegisters();
 		screen = new Display();
 		key = new Array<Bool>();
 		initialize();

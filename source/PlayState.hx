@@ -19,12 +19,11 @@ class PlayState extends FlxState
 	private var myChip8:CPU;
 	private var renderer:Renderer;
 	private var step:Int;
-	
-	/**
-	 * Function that is called up when to state is created to set it up. 
-	 */
-	override public function create():Void
+
+	private function resetChip8(): Void
 	{
+		myChip8.initialize();
+
 		var filePath = Args.getROMArg();
 		
 		if (filePath == null)
@@ -32,6 +31,18 @@ class PlayState extends FlxState
 			Util.log("Please supply a \"--rom /path/to/rom/\" argument");
 		}
 
+		Util.log('Loading ${filePath}');
+
+		myChip8.loadGameFromPath(filePath);
+
+		myChip8.start();
+	}
+
+	/**
+	 * Function that is called up when to state is created to set it up.
+	 */
+	override public function create():Void
+	{
 		chip8KeyMap = new Map<FlxKey, Int>();
 
 		// Initialize key map
@@ -42,9 +53,7 @@ class PlayState extends FlxState
 
 		myChip8 = new CPU();
 		
-		Util.log('Loading ${filePath}');
-
-		myChip8.loadGameFromPath(filePath);
+		resetChip8();
 		
 		var graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Display.OFF_COLOR, true);
@@ -52,8 +61,6 @@ class PlayState extends FlxState
 		renderer = new Renderer(myChip8.screen, graphics.pixels);
 		
 		add(graphics);
-
-		myChip8.start();
 		
 		super.create();
 	}
@@ -74,6 +81,12 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
+		// Reset key
+		if (FlxG.keys.justReleased.G)
+		{
+			resetChip8();
+		}
+
 		myChip8.cycle();
 
 		if (myChip8.drawFlag)
