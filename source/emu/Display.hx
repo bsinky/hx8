@@ -4,8 +4,6 @@ class Display
 {
     public static inline var WIDTH:Int = 64;
     public static inline var HEIGHT:Int = 32;
-	public static inline var OFF_COLOR:UInt = 0xff000000;
-	public static inline var ON_COLOR:UInt = 0xffffffff;
 
     private var screen:Array<Bool>;
 
