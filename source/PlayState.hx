@@ -78,7 +78,7 @@ class PlayState extends FlxState
 		cyclesPerFrame = Args.getCyclesPerFrame();
 		
 		var graphics = new FlxSprite(0, 0);
-		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Display.OFF_COLOR, true);
+		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Renderer.Palettes[0].on, true);
 
 		renderer = new Renderer(myChip8.screen, graphics.pixels);
 		
@@ -110,7 +110,7 @@ class PlayState extends FlxState
 			myChip8.cycle();
 		}
 
-		if (myChip8.drawFlag)
+		if (myChip8.drawFlag || renderer.forceRedraw)
 		{
 			renderer.draw();
 			myChip8.drawFlag = false;
@@ -146,6 +146,18 @@ class PlayState extends FlxState
 		if (FlxG.keys.justReleased.G)
 		{
 			resetChip8();
+		}
+
+		// Change palette
+		if (FlxG.keys.justReleased.P)
+		{
+			renderer.swapPalette();
+		}
+
+		// Invert palette
+		if (FlxG.keys.justReleased.I)
+		{
+			renderer.invertPalette();
 		}
 
 		// Exit key
