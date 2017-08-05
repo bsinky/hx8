@@ -1,6 +1,6 @@
-arguable 1.0.2
-flixel 4.3.0
-hxcpp 3.4.64
-lime 2.9.1
-openfl 3.6.1
-tink_url 0.3.1
+-lib arguable
+-lib flixel:4.3.0
+-lib hxcpp
+-lib lime:2.9.1
+-lib openfl:3.6.1
+-lib tink_url
