@@ -43,4 +43,16 @@ class Args
         return _values.has("fullscreen");
         #end
     }
+
+    public static function getCyclesPerFrame(): Int
+    {
+        var defaultValue = 2;
+        #if html5
+        return defaultValue;
+        #else
+        return _values.has("cyclesperframe")
+            ? Std.parseInt(_values.get("cyclesperframe").value)
+            : defaultValue;
+        #end
+    }
 }

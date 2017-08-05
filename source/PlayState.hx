@@ -19,6 +19,7 @@ class PlayState extends FlxState
 	private var myChip8:CPU;
 	private var renderer:Renderer;
 	private var step:Int;
+	private var cyclesPerFrame:Int;
 
 	private function resetChip8(): Void
 	{
@@ -54,6 +55,8 @@ class PlayState extends FlxState
 		myChip8 = new CPU();
 		
 		resetChip8();
+
+		cyclesPerFrame = Args.getCyclesPerFrame();
 		
 		var graphics = new FlxSprite(0, 0);
 		graphics.makeGraphic(Display.WIDTH, Display.HEIGHT, Display.OFF_COLOR, true);
@@ -87,7 +90,10 @@ class PlayState extends FlxState
 			resetChip8();
 		}
 
-		myChip8.cycle();
+		for (x in 0...cyclesPerFrame)
+		{
+			myChip8.cycle();
+		}
 
 		if (myChip8.drawFlag)
 		{
