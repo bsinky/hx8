@@ -13,7 +13,13 @@ hx8 --rom /path/to/rom [--cyclesperframe X]
 Compiling
 ---------
 
-Assuming you have `lime-tools` installed and the `lime` alias set up:
+First, install the required dependencies.  From the project root directory:
+
+```bash
+haxelib install dependencies.hxml
+```
+
+Then to compile, assuming you have `lime-tools` installed and the `lime` alias set up:
 
 ```bash
 lime build Project.xml <target>
