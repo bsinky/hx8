@@ -126,22 +126,22 @@ class PlayState extends FlxState
 	}
 
 	private var chip8Keys = [
-		FlxKey.Q,
-		FlxKey.W,
-		FlxKey.E,
-		FlxKey.R,
-		FlxKey.A,
-		FlxKey.S,
-		FlxKey.D,
-		FlxKey.F,
-		FlxKey.Z,
-		FlxKey.X,
-		FlxKey.C,
-		FlxKey.V,
-		FlxKey.LEFT,
-		FlxKey.RIGHT,
-		FlxKey.UP,
-		FlxKey.DOWN
+		FlxKey.X, 		// 0
+		FlxKey.ONE,		// 1
+		FlxKey.TWO,		// 2
+		FlxKey.THREE,	// 3
+		FlxKey.Q, 		// 4
+		FlxKey.W, 		// 5
+		FlxKey.E, 		// 6
+		FlxKey.A, 		// 7
+		FlxKey.S, 		// 8
+		FlxKey.D, 		// 9
+		FlxKey.Z,		// A
+		FlxKey.C,		// B
+		FlxKey.FOUR,	// C
+		FlxKey.R,		// D
+		FlxKey.F,		// E
+		FlxKey.V		// F
 	];
 
 	private var chip8KeyMap:Map<FlxKey, Int>;
