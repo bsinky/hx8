@@ -78,7 +78,7 @@ class CPU
 		clearMemory();
 		
 		// Load fontset
-		for(i in 0...80)
+		for(i in 0...chip8_fontset.length)
 		{
 			memory[i] = chip8_fontset[i];
 		}

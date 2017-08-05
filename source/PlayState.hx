@@ -20,6 +20,25 @@ class PlayState extends FlxState
 	private var renderer:Renderer;
 	private var step:Int;
 	private var cyclesPerFrame:Int;
+	private var chip8KeyMap:Map<FlxKey, Int>;
+	private var chip8Keys = [
+		FlxKey.X, 		// 0
+		FlxKey.ONE,		// 1
+		FlxKey.TWO,		// 2
+		FlxKey.THREE,	// 3
+		FlxKey.Q, 		// 4
+		FlxKey.W, 		// 5
+		FlxKey.E, 		// 6
+		FlxKey.A, 		// 7
+		FlxKey.S, 		// 8
+		FlxKey.D, 		// 9
+		FlxKey.Z,		// A
+		FlxKey.C,		// B
+		FlxKey.FOUR,	// C
+		FlxKey.R,		// D
+		FlxKey.F,		// E
+		FlxKey.V		// F
+	];
 
 	private function resetChip8(): Void
 	{
@@ -84,11 +103,7 @@ class PlayState extends FlxState
 	 */
 	override public function update(elapsed:Float):Void
 	{
-		// Reset key
-		if (FlxG.keys.justReleased.G)
-		{
-			resetChip8();
-		}
+		handleEmulatorKeys();
 
 		for (x in 0...cyclesPerFrame)
 		{
@@ -125,24 +140,20 @@ class PlayState extends FlxState
 		super.update(elapsed);
 	}
 
-	private var chip8Keys = [
-		FlxKey.X, 		// 0
-		FlxKey.ONE,		// 1
-		FlxKey.TWO,		// 2
-		FlxKey.THREE,	// 3
-		FlxKey.Q, 		// 4
-		FlxKey.W, 		// 5
-		FlxKey.E, 		// 6
-		FlxKey.A, 		// 7
-		FlxKey.S, 		// 8
-		FlxKey.D, 		// 9
-		FlxKey.Z,		// A
-		FlxKey.C,		// B
-		FlxKey.FOUR,	// C
-		FlxKey.R,		// D
-		FlxKey.F,		// E
-		FlxKey.V		// F
-	];
+	private function handleEmulatorKeys(): Void
+	{
+		// Reset key
+		if (FlxG.keys.justReleased.G)
+		{
+			resetChip8();
+		}
 
-	private var chip8KeyMap:Map<FlxKey, Int>;
+		// Exit key
+		if (FlxG.keys.justReleased.ESCAPE)
+		{
+			#if !html5
+			Sys.exit(0);
+			#end
+		}
+	}
 }
