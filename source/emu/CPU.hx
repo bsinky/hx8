@@ -28,7 +28,7 @@ class CPU
 	private var isRunning:Bool;	    // Whether the CPU is running
 	private var nextKeyRegister:Int; // Register to store next key press in while waiting for a key
 
-	private var chip8_fontset =
+	private static var chip8_fontset =
 	[
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 		0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -399,7 +399,7 @@ class CPU
 					case 0x0020:
 						Util.cpuLog("FX29: Set I equal to location of sprite for digit Vx.");
 						// Multiply by number of rows per character
-						I += V[x] * 5;
+						I = V[x] * 5;
 						
 					case 0x0030:
 						Util.cpuLog("FX33: Store BCD representation of Vx in memory location starting at location I");
