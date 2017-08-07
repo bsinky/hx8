@@ -46,7 +46,7 @@ class Args
 
     public static function getCyclesPerFrame(): Int
     {
-        var defaultValue = 2;
+        var defaultValue = 6;
         #if html5
         return defaultValue;
         #else
