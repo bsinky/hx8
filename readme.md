@@ -71,7 +71,15 @@ License
 
 This project is licensed under the MIT License.  Full terms may be found in the LICENSE file.
 
+Chip-8 ROMs included in `assets/data/public/` are public domain works.
+
 Contributing
 ------------
 
 Pull requests are welcome!
+
+TODO
+----
+
+* ROM File open dialog
+* Additional targets (HTML5, Android)
