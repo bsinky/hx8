@@ -5,6 +5,7 @@ import emu.Display;
 import emu.Args;
 import emu.Renderer;
 import emu.Util;
+import emu.FileHandler;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.FlxInput;
 import flixel.FlxG;
@@ -39,23 +40,19 @@ class PlayState extends FlxState
 		FlxKey.F,		// E
 		FlxKey.V		// F
 	];
+	private var romFilePath:String;
 
 	private function resetChip8(): Void
 	{
 		myChip8.initialize();
 
-		var filePath = Args.getROMArg();
-		
-		if (filePath == null)
+		if (romFilePath != null)
 		{
-			Util.log("Please supply a \"--rom /path/to/rom/\" argument");
+			Util.log('Loading ${romFilePath}');
+
+			myChip8.loadGameFromPath(romFilePath);
+			myChip8.start();	
 		}
-
-		Util.log('Loading ${filePath}');
-
-		myChip8.loadGameFromPath(filePath);
-
-		myChip8.start();
 	}
 
 	/**
@@ -72,6 +69,8 @@ class PlayState extends FlxState
 		}
 
 		myChip8 = new CPU();
+
+		romFilePath = Args.getROMArg();		
 		
 		resetChip8();
 
@@ -167,5 +166,20 @@ class PlayState extends FlxState
 			Sys.exit(0);
 			#end
 		}
+
+		// Open file key
+		if (FlxG.keys.justReleased.O)
+		{
+			#if (cpp||neko)
+			myChip8.stop();
+			FileHandler.openFile(handleSelect);
+			#end
+		}
 	}
+
+	private static function handleSelect(e:Event<String>): Void
+    {
+		//romFilePath = e.value;
+		resetChip8();
+    }
 }
