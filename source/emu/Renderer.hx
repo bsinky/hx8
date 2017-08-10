@@ -37,8 +37,8 @@ class Renderer
     }
 
     public function draw(): Void
-	{
-		_pixels.lock();
+    {
+        _pixels.lock();
 
         var onColor =
             if (!_isInverted) _palette.on
@@ -47,23 +47,23 @@ class Renderer
         var offColor =
             if (!_isInverted) _palette.off
             else _palette.on;
-		
-		// do drawing
-		for (x in 0...Display.WIDTH)
+        
+        // do drawing
+        for (x in 0...Display.WIDTH)
         {
             for( y in 0...Display.HEIGHT)
             {
                 _pixels.setPixel32(x, y, _display.getPixel(x, y) ? onColor : offColor);
             }
         }
-		
-		_pixels.unlock();
+        
+        _pixels.unlock();
 
         // Done drawing, reset force redraw flag
         forceRedraw = false;
 
         Util.displayLog(_display);
-	}
+    }
 
     public function swapPalette(): Void
     {
