@@ -63,6 +63,9 @@ class PlayState extends FlxState
 	 */
 	override public function create():Void
 	{
+        // Hide the mouse
+        FlxG.mouse.visible = false;
+
 		chip8KeyMap = new Map<FlxKey, Int>();
 
 		// Initialize key map
