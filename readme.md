@@ -85,5 +85,5 @@ Pull requests are welcome!
 TODO
 ----
 
-* ROM File open dialog
+* ~~ROM File open dialog~~ "File" menu with "Open..." option
 * Additional targets (HTML5, Android)
