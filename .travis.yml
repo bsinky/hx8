@@ -6,5 +6,5 @@ haxe:
 install:
   - yes | haxelib install dependencies.hxml
 
-build:
+script:
   - haxelib run lime build Project.xml linux
