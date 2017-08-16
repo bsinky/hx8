@@ -1,7 +1,7 @@
 hx8 ~ Haxe Chip-8 Emulator
 ==========================
 
-[![Build Status](https://travis-ci.org/bsinky/hx8.svg?branch=master)](https://travis-ci.org/bsinky/hx8)
+[![Build Status](https://travis-ci.org/bsinky/hx8.svg?branch=master)](https://travis-ci.org/bsinky/hx8) [![Build status](https://ci.appveyor.com/api/projects/status/lf2qkqal2tob1xme/branch/master?svg=true)](https://ci.appveyor.com/project/bsinky/hx8/branch/master)
 
 hx8 is a simple Chip-8 emulator/interpreter written in [Haxe](http://haxe.org/), with [Lime](https://github.com/openfl/lime) as the Input/Graphics framework.
 
