@@ -1,0 +1,25 @@
+version: "{build}"
+
+clone_folder: C:\projects\hxcpp
+
+environment:
+    global:
+        HAXE_ROOT: C:\projects\haxe
+        HAXELIB_ROOT: C:\projects\haxelib
+
+install:
+    # Install neko and haxe. Just download the chocolatey package instead of building from source in order to save time...
+    - cinst neko -y
+    - cinst haxe --prerelease --ignore-dependencies -s 'https://ci.appveyor.com/nuget/haxe' -y
+    - RefreshEnv
+    - neko -version
+    - haxe -version
+    # Setup haxelib
+    - mkdir "%HAXELIB_ROOT%"
+    - haxelib setup "%HAXELIB_ROOT%"
+    - cd %APPVEYOR_BUILD_FOLDER%
+    - haxelib install dependencies.hxml --always
+
+build_script:
+    - cd %APPVEYOR_BUILD_FOLDER%
+    - haxelib run lime Project.xml windows
