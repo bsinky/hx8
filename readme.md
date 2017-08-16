@@ -1,16 +1,20 @@
 hx8 ~ Haxe Chip-8 Emulator
 ==========================
 
-hx8 is a simple Chip-8 emulator/interpreter written in [Haxe](http://haxe.org/), with [HaxeFlixel](http://haxeflixel.com/) as the Input/Graphics framework.
+hx8 is a simple Chip-8 emulator/interpreter written in [Haxe](http://haxe.org/), with [Lime](https://github.com/openfl/lime) as the Input/Graphics framework.
 
 Usage
 -----
 
-Currently, the rom must be provided from the command line when launching the program.
+`hx8` accepts a few (optional) CLI arguments.
 
 ```bash
-hx8 --rom /path/to/rom [--cyclesperframe X]
+hx8 [--rom /path/to/rom] [--cyclesperframe X]
 ```
+
+`--rom` specifies a ROM to load at startup.
+
+`--cyclesperframe` specifies how many CPU cycles will be run every update cycle.
 
 Controls
 --------
@@ -22,6 +26,8 @@ Controls
 `P` to change the palette colors.
 
 `I` to invert the colors of the current palette.
+
+`O` to open the "Select ROM" dialog.
 
 The 16-button Chip-8 keyboard is mapped as follows:
 
@@ -70,8 +76,6 @@ License
 -------
 
 This project is licensed under the MIT License.  Full terms may be found in the LICENSE file.
-
-Chip-8 ROMs included in `assets/data/public/` are public domain works.
 
 Contributing
 ------------
