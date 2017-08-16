@@ -1,7 +1,6 @@
 language: haxe
 haxe:
   - 3.4.2
-  - development
 
 install:
   - yes | haxelib install dependencies.hxml
