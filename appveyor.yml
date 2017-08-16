@@ -22,4 +22,4 @@ install:
 
 build_script:
     - cd %APPVEYOR_BUILD_FOLDER%
-    - haxelib run lime Project.xml windows
+    - haxelib run lime build Project.xml windows
