@@ -2,11 +2,19 @@ package;
 
 import emu.CPU;
 import emu.Args;
-import emu.Util;
 import emu.Keyboard;
 
 import lime.ui.Window;
+#if native
+import emu.Util;
 import lime.ui.FileDialog;
+#elseif html5
+import haxe.io.Bytes;
+import js.Browser;
+import js.html.Uint8Array;
+import js.html.InputElement;
+import js.html.FileReader;
+#end
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.app.Application;
@@ -15,7 +23,13 @@ import lime.graphics.Renderer;
 class Main extends Application
 {
     private var keys:Map<Int, Bool>;
+    #if native
+    private var romFilePath:String;
     private var fileDialog:FileDialog;
+    #elseif html5
+    private var fileOpenButton:InputElement;
+    private var lastLoadedROMBytes:Bytes;
+    #end
     private var myChip8:CPU;
     private var chip8Renderer:emu.Renderer;
     private var step:Int;
@@ -39,15 +53,18 @@ class Main extends Application
         Keyboard.F,		// E
         Keyboard.V		// F
     ];
-    private var romFilePath:String;
 
     public function new ()
     {
         chip8KeyMap = new Map<Int, Int>();        
         keys = new Map<Int, Bool>();
 
+        #if native
         fileDialog = new FileDialog();
         fileDialog.onSelect.add(handleFileBrowse);
+        #elseif html5
+        initDOMElements();
+        #end
 
         // Initialize key map
         for (i in 0...chip8Keys.length)
@@ -57,11 +74,14 @@ class Main extends Application
 
         myChip8 = new CPU();
 
-        romFilePath = Args.getROMArg();		
+        #if native
+        romFilePath = Args.getROMArg();
+        cyclesPerFrame = Args.getCyclesPerFrame();
+        #elseif html5
+        cyclesPerFrame = Args.DEFAULT_CYCLES_PER_FRAME;
+        #end
         
         resetChip8();
-
-        cyclesPerFrame = Args.getCyclesPerFrame();
 
         chip8Renderer = new emu.Renderer(myChip8.screen);
 
@@ -119,7 +139,7 @@ class Main extends Application
         
             // Open file key
             case Keyboard.O:
-                #if (cpp||neko)
+                #if native
                 myChip8.stop();
                 fileDialog.browse(lime.ui.FileDialogType.OPEN, null, null, "Select ROM");
                 #end
@@ -155,8 +175,8 @@ class Main extends Application
     
     public override function render (renderer:Renderer):Void
     {
-        switch (renderer.context) {
-            
+        switch (renderer.context)
+        {
             case CAIRO (cairo):
                 chip8Renderer.drawCairo(cairo);
             
@@ -178,8 +198,10 @@ class Main extends Application
 
     private function resetChip8(): Void
     {
+        step = 0;
         myChip8.initialize();
 
+        #if native
         if (romFilePath != null)
         {
             Util.log('Loading ${romFilePath}');
@@ -187,10 +209,97 @@ class Main extends Application
             myChip8.loadGameFromPath(romFilePath);
             myChip8.start();	
         }
+        #elseif html5
+        if (lastLoadedROMBytes != null)
+        {
+            myChip8.loadGame(lastLoadedROMBytes);
+            myChip8.start();
+        }
+        #end
     }
 
-    private function handleFileBrowse(selectedFile:String): Void {
+    #if native
+    private function handleFileBrowse(selectedFile:String): Void
+    {
         romFilePath = selectedFile;
         resetChip8();
     }
+    #elseif html5
+    private function initDOMElements(): Void
+    {
+        Browser.document.addEventListener("DOMContentLoaded", function(event)
+        {
+            // Select ROM button
+            fileOpenButton = Browser.document.createInputElement();
+            fileOpenButton.setAttribute("type", "file");
+            fileOpenButton.setAttribute("value", "Open ROM");
+            fileOpenButton.setAttribute("id", "OpenROM");
+            fileOpenButton.style.position = "fixed";
+            fileOpenButton.style.bottom = "0";
+            fileOpenButton.addEventListener("change", handleFileOpen, false);
+            Browser.document.body.appendChild(fileOpenButton);
+
+            // Cycles per frame selector
+            var cyclesPerFrameSelect = Browser.document.createSelectElement();
+            cyclesPerFrameSelect.id = "cyclesperframe";
+            var cyclesPerFramePossibleValues = [
+                6,
+                15,
+                20,
+                30,
+                100,
+                200,
+                500,
+                1000
+            ];
+            for (cyclesValue in cyclesPerFramePossibleValues)
+            {
+                cyclesPerFrameSelect.options.add(createOptionElement(Std.string(cyclesValue), '${cyclesValue} Cycles/Frame'));
+            }
+            cyclesPerFrameSelect.addEventListener("change", function ()
+            {
+                var newCyclesValue = Std.parseInt(cyclesPerFrameSelect.value);
+                if (newCyclesValue != null)
+                {
+                    cyclesPerFrame = newCyclesValue;
+                }
+            }, false);
+            cyclesPerFrameSelect.style.position = "fixed";
+            cyclesPerFrameSelect.style.bottom = "0";
+            cyclesPerFrameSelect.style.left = "25%";
+            Browser.document.body.appendChild(cyclesPerFrameSelect);
+        });
+    }
+
+    private function createOptionElement(value:String, text:String): js.html.OptionElement
+    {
+        var newOption = Browser.document.createOptionElement();
+        newOption.value = value;
+        newOption.text = text;
+        return newOption;
+    }
+
+    private function handleFileOpen(event:js.html.Event):Void
+    {
+        if (untyped event.target.files[0])
+        {
+            var selectedFile = untyped event.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(){
+                var arrayBuffer = reader.result;
+                var byteArray = new Uint8Array(arrayBuffer);
+                var bytes:Bytes = Bytes.alloc(byteArray.length);
+                
+                for (i in 0...byteArray.length)
+                {
+                    bytes.set(i, byteArray[i]);
+                }
+                
+                lastLoadedROMBytes = bytes;
+                resetChip8();
+            };
+            reader.readAsArrayBuffer(selectedFile);
+        }
+    }
+    #end
 }

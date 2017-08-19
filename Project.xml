@@ -7,8 +7,7 @@
     <source path="source" />
     
     <haxelib name="lime" />
-    <haxelib name="arguable" unless="js"/>
-    <haxelib name="tink_url" if="js"/>
+    <haxelib name="arguable" unless="html5"/>
     
     <assets path="assets" rename="assets" exclude="Need-Assets-Directory-To-Build.txt"/>
 

@@ -93,14 +93,14 @@ class Renderer
         Util.displayLog(_display);
     }
 
-    private function internalDrawHexColor(renderCallback:Int->Int->UInt->Void): Void
+    private function internalDrawHexColor(renderCallback:Float->Float->Float->Float->UInt->Void): Void
     {
         for (x in 0...Display.WIDTH)
         {
             for( y in 0...Display.HEIGHT)
             {
                 var isPixelOn = _display.getPixel(x, y);
-                renderCallback(x, y, isPixelOn ? onHex : offHex);
+                renderCallback(x * scale, y * scale, scale, scale, isPixelOn ? onHex : offHex);
             }
         }
 
@@ -126,10 +126,10 @@ class Renderer
     {
         canvas.fillStyle = '#${StringTools.hex(offHex & 0xFFFFFF)}';
         canvas.fill();
-        internalDrawHexColor(function(x,y,color) {
+        internalDrawHexColor(function(x,y,width,height,color) {
             var colorString = '#${StringTools.hex(color & 0xFFFFFF)}';
             canvas.fillStyle = colorString;
-            canvas.fillRect(x,y,1,1);
+            canvas.fillRect(x,y,width,height);
         });
     }
 

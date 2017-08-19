@@ -1,6 +1,6 @@
 package emu;
 
-#if js
+#if html5
 import js.Browser;
 #end
 
@@ -8,7 +8,7 @@ class Util
 {
     public static function log(message:String): Void
     {
-        #if js
+        #if html5
         Browser.window.console.log(message);
         #else
         Sys.println(message);
