@@ -8,7 +8,7 @@ hx8 is a simple Chip-8 emulator/interpreter written in [Haxe](http://haxe.org/),
 Usage
 -----
 
-`hx8` accepts a few (optional) CLI arguments.
+When targeting `native`, `hx8` accepts a few (optional) CLI arguments.
 
 ```bash
 hx8 [--rom /path/to/rom] [--cyclesperframe X]
@@ -29,7 +29,7 @@ Controls
 
 `I` to invert the colors of the current palette.
 
-`O` to open the "Select ROM" dialog.
+`O` to open the "Select ROM" dialog. **(only for native targets)**
 
 The 16-button Chip-8 keyboard is mapped as follows:
 
@@ -70,9 +70,9 @@ Then to compile, assuming you have `lime-tools` installed and the `lime` alias s
 lime build Project.xml <target>
 ```
 
-The only tested target is Linux (Fedora 25), other desktop targets (Windows, OS X) should work theory.
-
-An HTML5 target is in the works (html5-target branch).
+Current targets are:
+ * `linux` using Lime's Cairo software renderer (tested on Fedora 25), other desktop targets (Windows, OS X) should work theory
+ * `html5` using canvas rendering
 
 License
 -------
@@ -88,4 +88,4 @@ TODO
 ----
 
 * ~~ROM File open dialog~~ "File" menu with "Open..." option
-* Additional targets (HTML5, Android)
+* Additional targets (Android, ???)
