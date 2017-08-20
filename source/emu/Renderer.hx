@@ -56,12 +56,12 @@ class Renderer
     public var onRGB(default, null):RGBPercent;
     
     public static var Palettes = [
-        { off: 0xFF000000, on: 0xFFFFFFFF },    // Black and white
-        { off: 0xFF996600, on: 0xFFFFCC00 },    // Brown and yellow
-        { off: 0xFF8BAC0F, on: 0xFF306230 },    // Shades of green
-        { off: 0xFFAA3939, on: 0xFF550000 },    // Reds
-        { off: 0xFF045777, on: 0xFF6BB1CC },    // Blues
-        { off: 0xFFED9A00, on: 0xFF936000 },    // "Haxe" theme
+        { off: 0x000000, on: 0xFFFFFF },    // Black and white
+        { off: 0x996600, on: 0xFFCC00 },    // Brown and yellow
+        { off: 0x8BAC0F, on: 0x306230 },    // Shades of green
+        { off: 0xAA3939, on: 0x550000 },    // Reds
+        { off: 0x045777, on: 0x6BB1CC },    // Blues
+        { off: 0xED9A00, on: 0x936000 },    // "Haxe" theme
     ];
 
     public function new(display:Display)
@@ -112,11 +112,11 @@ class Renderer
 
     public function drawCairo(cairo:CairoRenderContext): Void
     {
-        cairo.setSourceRGBA(offRGB.Red, offRGB.Green, offRGB.Blue, 1.0);
+        cairo.setSourceRGB(offRGB.Red, offRGB.Green, offRGB.Blue);
         cairo.fill();
         internalDraw(function(x,y,width,height,color) {
             cairo.moveTo(x, y);
-            cairo.setSourceRGBA(color.Red, color.Green, color.Blue, 1.0);
+            cairo.setSourceRGB(color.Red, color.Green, color.Blue);
             cairo.rectangle(x,y,width,height);
             cairo.fill();
         });
@@ -124,10 +124,10 @@ class Renderer
     
     public function drawCanvas(canvas:CanvasRenderContext): Void
     {
-        canvas.fillStyle = '#${StringTools.hex(offHex & 0xFFFFFF)}';
+        canvas.fillStyle = '#${StringTools.lpad(StringTools.hex(offHex), "0", 6)}';
         canvas.fill();
         internalDrawHexColor(function(x,y,width,height,color) {
-            var colorString = '#${StringTools.hex(color & 0xFFFFFF)}';
+            var colorString = '#${StringTools.lpad(StringTools.hex(color), "0", 6)}';
             canvas.fillStyle = colorString;
             canvas.fillRect(x,y,width,height);
         });

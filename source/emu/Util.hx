@@ -39,23 +39,18 @@ class Util
         #end
     }
 
-    public static function alphaValue(argb:UInt): Int
+    public static function rValue(rgb:UInt): Int
     {
-        return (argb & 0xFF000000) >> 24;
+        return (rgb & 0xFF0000) >> 16;
     }
 
-    public static function rValue(argb:UInt): Int
+    public static function gValue(rgb:UInt): Int
     {
-        return (argb & 0x00FF0000) >> 16;
+        return (rgb & 0x00FF00) >> 8;
     }
 
-    public static function gValue(argb:UInt): Int
+    public static function bValue(rgb:UInt): Int
     {
-        return (argb & 0x0000FF00) >> 8;
-    }
-
-    public static function bValue(argb:UInt): Int
-    {
-        return (argb & 0x000000FF);
+        return (rgb & 0x0000FF);
     }
 }
