@@ -72,7 +72,7 @@ lime build Project.xml <target>
 
 Current targets are:
  * `linux` using Lime's Cairo software renderer (tested on Fedora 25), other desktop targets (Windows, OS X) should work theory
- * `html5` using canvas rendering
+ * `html5` using canvas rendering - you can try this target in your browser right now, [here](http://bsinky.github.io/hx8)!
 
 License
 -------
